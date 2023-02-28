@@ -50,7 +50,7 @@ mts.append(0xF7) # sysex end
 MIDI setup
 """
 seq = alsaseq.Sequencer(clientname='synthtuner')
-output_id = seq.create_simple_port('out', alsaseq.SEQ_PORT_TYPE_MIDI_GENERIC | alsaseq.SEQ_PORT_TYPE_APPLICATION, alsaseq.SEQ_PORT_CAP_WRITE)
+output_id = seq.create_simple_port('out', alsaseq.SEQ_PORT_TYPE_MIDI_GENERIC | alsaseq.SEQ_PORT_TYPE_APPLICATION, alsaseq.SEQ_PORT_CAP_READ | alsaseq.SEQ_PORT_CAP_SUBS_READ)
 
 writes = alsaseq.SEQ_PORT_CAP_WRITE | alsaseq.SEQ_PORT_CAP_SUBS_WRITE
 def is_valid_port(client_id, port_id):
