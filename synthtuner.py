@@ -82,7 +82,6 @@ if config.list:
 MIDI connection
 """
 connected = False
-ignored_clients = ['System', 'jack_midi']
 for client in seq.connection_list():
     client_name, client_id, port_list = client
     if fnmatch(client_name, config.client):
