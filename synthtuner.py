@@ -1,5 +1,6 @@
 #!/bin/python3
 # encoding: utf-8
+# copyleft jean-emmanuel doucet © 2023 (gplv3)
 
 from pyalsa import alsaseq
 from pyalsa.alsaseq import SEQ_EVENT_SYSEX
