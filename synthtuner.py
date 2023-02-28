@@ -60,7 +60,6 @@ def is_valid_port(client_id, port_id):
 """
 MIDI list
 """
-
 def print_list():
     list_str = ''
     for client in seq.connection_list():
