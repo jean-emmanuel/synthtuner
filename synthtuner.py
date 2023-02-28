@@ -52,16 +52,27 @@ MIDI setup
 seq = alsaseq.Sequencer(clientname='synthtuner')
 output_id = seq.create_simple_port('out', alsaseq.SEQ_PORT_TYPE_MIDI_GENERIC | alsaseq.SEQ_PORT_TYPE_APPLICATION, alsaseq.SEQ_PORT_CAP_WRITE)
 
+writes = alsaseq.SEQ_PORT_CAP_WRITE | alsaseq.SEQ_PORT_CAP_SUBS_WRITE
+def is_valid_port(client_id, port_id):
+    caps = seq.get_port_info(port_id, client_id)['capability']
+    return not caps & alsaseq.SEQ_PORT_CAP_NO_EXPORT and caps & writes == writes
+
 """
 MIDI list
 """
+
 def print_list():
-    port_list = ''
+    list_str = ''
     for client in seq.connection_list():
-        port_list += client[0] + '\n'
-        for port in client[2]:
-            port_list += '  ' + port[0] + '\n'
-    print('Available clients / ports:\n\n%s' % port_list)
+        client_name, client_id, port_list = client
+        client_name_printed = False
+        for port in port_list:
+            port_name, port_id, connection_list = port
+            if is_valid_port(client_id, port_id):
+                if not client_name_printed:
+                    list_str += client_name + '\n'
+                list_str += '  ' + port_name + '\n'
+    print('Available input clients / ports:\n\n%s' % list_str)
 
 if config.list:
     print_list()
@@ -71,14 +82,16 @@ if config.list:
 MIDI connection
 """
 connected = False
+ignored_clients = ['System', 'jack_midi']
 for client in seq.connection_list():
     client_name, client_id, port_list = client
     if fnmatch(client_name, config.client):
         for port in port_list:
             port_name, port_id, connection_list = port
-            if fnmatch(port_name, config.port):
+            capability = seq.get_port_info(port_id, client_id)['capability']
+            if is_valid_port(client_id, port_id) and fnmatch(port_name, config.port):
+                print('Connecting to %s:%s' % (client_name, port_name))
                 seq.connect_ports((seq.client_id, output_id), (client_id, port_id))
-                print('Connected to %s:%s' % (client_name, port_name))
                 connected = True
 
 """
